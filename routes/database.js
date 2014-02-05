@@ -1,44 +1,66 @@
-﻿var mongojs = require("mongojs");
+﻿var MongoClient = require('mongodb').MongoClient;
 var cfg = require("./config");
+
 module.exports = {
     open: function () {
         return new mongojs(cfg.mongo.cnstring);
     },
-    save: function (name) {
+    save: function (name, keys) {
         return function (req, res) {
-            var conn = new mongojs(cfg.mongo.cnstring);
-            conn.collection(name).save(req.body, function (err, doc) {
+            var query = {};
+
+            for (var i in keys) {
+                var key = keys[i];
+                query[key] = req.body[key];
+            };
+
+            res.send(req.body);
+            MongoClient.connect(cfg.mongo.cnstring, function (err, db) {
                 if (err) throw err;
 
-                res.send(doc);
+                db.collection(name).findAndModify(query, {}, req.body, { upsert: true }, function (err, doc) {
+                    if (err) throw err;
+                    res.send(doc);
+                });
             });
         }
     },
     read: function (name, filter, order) {
         return function (req, res) {
-            var params = {};
+            var query = {};
 
             for (var key in filter) {
-                params[key] = req.params[filter[key]];
+                query[key] = req.params[filter[key]];
             };
 
-            var conn = new mongojs(cfg.mongo.cnstring);
-            conn.collection(name).find(params).sort(order, function (err, docs) {
-                if (err)
-                    throw (err);
-
-                conn.close();
-                res.send(docs);
-            })
-        }
-    },
-    dele: function (name) {
-        return function (req, res) {
-            var conn = new mongojs(cfg.mongo.cnstring);
-            conn.collection(name).remove(req.body, function (err, doc) {
+            MongoClient.connect(cfg.mongo.cnstring, function (err, db) {
                 if (err) throw err;
 
-                res.send(doc);
+                var cursor = db.collection(name).find(query).sort(order);
+                cursor.toArray(function (err, docs) {
+                    if (err) throw err;
+                    res.send(docs);
+                });
+            });
+        }
+    },
+    dele: function (name, keys) {
+        return function (req, res) {
+            var query = {};
+
+            for (var i in keys) {
+                var key = keys[i];
+                query[key] = req.body[key];
+            };
+
+            MongoClient.connect(cfg.mongo.cnstring, function (err, db) {
+                if (err) throw err;
+
+                res.send(query);
+                db.collection(name).remove(query, {}, function (err, doc) {
+                    if (err) throw err;
+                    res.send(doc);
+                });
             });
         }
     },

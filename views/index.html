@@ -4,13 +4,15 @@
     <script type="text/javascript" src="/js/vendors/jquery.min.js"></script>
 </head>
 <body>
+    <label>Group</label>
+    <input type="text" name="group" />
     <button id="btnLoad">Load</button>
     <ul id="toolbars"></ul>
 
     <script>
         $(document).ready(function () {
             $("#btnLoad").on("click", function () {
-                $.post("/api/toolbar/read", function (docs) {
+                $.post("/api/dropdown/read/" + $("[name=group]").val(), function (docs) {
                     var html = "";
                     (docs || []).forEach(function (doc) {
                         html += "<li>" + doc.text + "</li>";

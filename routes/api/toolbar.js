@@ -1,4 +1,4 @@
-var database = require("../database");
+var database = require("../../libs/database");
 var api = module.exports = {};
 
 api.save = database.save("toolbars", ["name"]);

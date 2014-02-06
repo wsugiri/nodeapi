@@ -1,5 +1,6 @@
-﻿var database = require("../routes/database");
+﻿var MongoClient = require('mongodb').MongoClient;
 var async = require('async');
+var cfg = require("../config/config");
 
 module.exports = {
     save: function (docs, callback) {
@@ -10,18 +11,25 @@ module.exports = {
 }
 
 function initial(name, data) {
-    var conn = database.open();
-    var coll = conn.collection(name);
+    MongoClient.connect(cfg.mongo.cnstring, function (err, db) {
+        if (err) throw err;
 
-    coll.remove(function (err) {
-        if (err)
-            throw err;
+        var coll = db.collection(name);
+        var syncfuncs = [];
+        coll.remove(function (err) {
+            if (err) throw err;
+            var funcs = [];
 
-        async.each(data, function (route, callback) {
-            console.log(route);
-            coll.save(route, callback);
+            async.each(data, function (doc, db) {
+                coll.insert(doc, db);
+            }, close(db));
         });
 
-        conn.close();
+        function close(db) {
+            return function (err) {
+                if (err) throw err;
+                db.close();
+            }
+        }
     });
 }

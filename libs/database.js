@@ -1,10 +1,7 @@
 ﻿var MongoClient = require('mongodb').MongoClient;
-var cfg = require("./config");
+var cfg = require("../config/config");
 
 module.exports = {
-    open: function () {
-        return new mongojs(cfg.mongo.cnstring);
-    },
     save: function (name, keys) {
         return function (req, res) {
             var query = {};

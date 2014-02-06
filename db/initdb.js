@@ -1,6 +1,6 @@
 ﻿var MongoClient = require('mongodb').MongoClient;
 var async = require('async');
-var cfg = require("../config/config");
+var cfg = require("../src/config");
 
 module.exports = {
     save: function (docs, callback) {

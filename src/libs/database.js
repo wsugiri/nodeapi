@@ -1,5 +1,5 @@
 ﻿var MongoClient = require('mongodb').MongoClient;
-var cfg = require("../config/config");
+var cfg = require("../config");
 
 module.exports = {
     save: function (name, keys) {

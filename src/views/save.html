@@ -1,6 +1,7 @@
 <html>
 <head>
-	<title>Index</title>
+    <title>Index</title>
+    <script type="text/javascript" src="/js/vendors/jquery.min.js"></script>
 </head>
 <body>
     <form action="/api/toolbar/save" method="post">
@@ -17,7 +18,19 @@
             <input type="text" name="idx" />
         </div>
         <div>
-            <button type="submit">Save</button>
+            <label>Int</label>
+            <input type="text" name="int" />
+        </div>
+        <div>
+            <label>Float</label>
+            <input type="text" name="float" />
+        </div>
+        <div>
+            <label>Date</label>
+            <input type="text" name="date" />
+        </div>
+        <div>
+            <button type="submit" id="btnSave1">Save 1</button>
         </div>
     </form>
 </body>

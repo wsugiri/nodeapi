@@ -2,7 +2,7 @@
 var cfg = require("../config");
 
 module.exports = {
-    save: function (name, keys) {
+    save: function (name, keys, types) {
         return function (req, res) {
             var query = {};
 
@@ -10,6 +10,23 @@ module.exports = {
                 var key = keys[i];
                 query[key] = req.body[key];
             };
+
+            for (var key in types) {
+                console.log(key, types, types[key]);
+                switch (types[key]) {
+                    case "int":
+                        req.body[key] = parseInt(req.body[key]);
+                        break;
+                    case "float":
+                        req.body[key] = parseFloat(req.body[key]);
+                        break;
+                    case "date":
+                        req.body[key] = new Date(req.body[key]);
+                        break;
+                    default:
+                        break;
+                }
+            }
 
             res.send(req.body);
             MongoClient.connect(cfg.mongo.cnstring, function (err, db) {
